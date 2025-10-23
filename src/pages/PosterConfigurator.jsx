@@ -2,15 +2,21 @@ import { useState } from "react";
 import Uploader from "../components/Uploader.jsx";
 import ControlsBasic from "../components/ControlsBasic.jsx";
 import MockupPreview from "../components/MockupPreview.jsx";
-
-// helper para baseURL do Vite (funciona em subpasta)
-const asset = (p) => `${import.meta.env.BASE_URL}${String(p).replace(/^\/+/, "")}`;
+import { MOCKUPS } from "../mocks.js";
 
 export default function PosterConfigurator() {
-  const [userImage, setUserImage] = useState(null);     // DataURL da foto do cliente
-  const [fit, setFit] = useState("cover");              // "cover" | "contain"
-  const [zoom, setZoom] = useState(1);                  // 1.0 = sem zoom extra
-  const [offset, setOffset] = useState({ x: 0, y: 0 }); // pan
+  const [userImage, setUserImage] = useState(null);
+
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const [mockKey, setMockKey] = useState("posterFrontal"); // ou "quadroPerspectiva"
+
+  const handleImage = (dataUrl) => {
+    setUserImage(dataUrl);
+    setZoom(1);
+    setOffset({ x: 0, y: 0 });
+  };
 
   const handleDrag = (dx, dy) => {
     setOffset((o) => ({ x: o.x + dx, y: o.y + dy }));
@@ -25,16 +31,11 @@ export default function PosterConfigurator() {
     <section className="config-grid">
       <div className="left">
         <h2>Personalize seu pôster</h2>
-        <p className="muted">
-          Envie a imagem, ajuste enquadramento e confira o efeito: ao passar o mouse,
-          o mockup troca para o seu pôster personalizado.
-        </p>
+        <p className="muted">Envie uma imagem quadrada (1:1) com boa resolução.</p>
 
-        <Uploader onImage={setUserImage} />
+        <Uploader onImage={handleImage} />
 
         <ControlsBasic
-          fit={fit}
-          setFit={setFit}
           zoom={zoom}
           setZoom={setZoom}
           offset={offset}
@@ -42,21 +43,38 @@ export default function PosterConfigurator() {
           onReset={resetView}
         />
 
-        <button className="cta" disabled={!userImage}>
-          Adicionar ao carrinho
-        </button>
+        <div className="controls">
+          <label>Mockup</label>
+          <div className="btns">
+            <button
+              className={mockKey === "posterFrontal" ? "btn active" : "btn"}
+              type="button"
+              onClick={() => setMockKey("posterFrontal")}
+            >
+              Frontal
+            </button>
+            <button
+              className={mockKey === "quadroPerspectiva" ? "btn active" : "btn"}
+              type="button"
+              onClick={() => setMockKey("quadroPerspectiva")}
+            >
+              Quadro
+            </button>
+          </div>
+        </div>
+
+        <button className="cta" disabled={!userImage}>Adicionar ao carrinho</button>
       </div>
 
       <div className="right">
         <MockupPreview
-          mockupSrc={asset("mockups/poster-front.jpg")}
+          mock={MOCKUPS[mockKey]}
           userImage={userImage}
-          fit={fit}
           zoom={zoom}
           offset={offset}
           onDrag={handleDrag}
         />
-        <p className="hint">Passe o mouse sobre a imagem para ver o pôster personalizado.</p>
+        <p className="hint">Pré-visualização no mockup escolhido.</p>
       </div>
     </section>
   );

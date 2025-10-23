@@ -1,5 +1,4 @@
 export default function ControlsBasic({
-  fit, setFit,
   zoom, setZoom,
   offset, setOffset,
   onReset
@@ -9,16 +8,9 @@ export default function ControlsBasic({
       <div className="row">
         <label>Enquadramento</label>
         <div className="btns">
-          <button
-            className={fit === "cover" ? "btn active" : "btn"}
-            onClick={() => setFit("cover")}
-            type="button"
-          >Preencher</button>
-          <button
-            className={fit === "contain" ? "btn active" : "btn"}
-            onClick={() => setFit("contain")}
-            type="button"
-          >Encaixar</button>
+          <button className="btn active" type="button" disabled>
+            Preencher (cover)
+          </button>
         </div>
       </div>
 
