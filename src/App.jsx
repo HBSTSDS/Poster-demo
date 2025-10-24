@@ -8,7 +8,7 @@ export default function App() {
     <StrictMode>
       <div className="page">
         <header className="topbar">
-          <div className="brand">M2 • Poster Pádel</div>
+          <div className="brand">Demo - Souvenir Editions</div>
         </header>
 
         <main className="content">

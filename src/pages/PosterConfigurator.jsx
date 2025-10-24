@@ -47,7 +47,7 @@ export default function PosterConfigurator() {
         <p className="hint mt-2">
           * <span className="font-medium" style={{ color: "#cf5460" }}>Vermelho</span> = área plana •{" "}
           <span className="font-medium" style={{ color: "#33a871" }}>Verde</span> = 1ª dobra •{" "}
-          <span className="font-medium" style={{ color: "#417BBF" }}>Azul</span> = parte de trás
+          <span className="font-medium" style={{ color: "#417BBF" }}>Azul</span> = 2ª dobra (parte de trás)
         </p>
 
         {/* botão rosa de download abaixo do quadro */}
