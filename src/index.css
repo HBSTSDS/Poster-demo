@@ -185,3 +185,30 @@ body{
 /* imagem do cliente dentro da janela/plano */
 
 .poster-img{ will-change: transform; }
+/* layout do configurador */
+.config-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  gap: 32px;
+  align-items: start;
+  position: relative;      /* cria contexto */
+  isolation: isolate;      /* evita vazamento de z-index de filhos */
+}
+
+/* coluna ESQUERDA precisa estar acima de qualquer overlay da direita */
+.config-grid .left {
+  position: relative;
+  z-index: 50;
+  pointer-events: auto;    /* garante clique */
+}
+
+/* coluna DIREITA abaixo da esquerda */
+.config-grid .right {
+  position: relative;
+  z-index: 10;
+}
+
+/* só o cartão de preview é interativo na direita */
+.config-grid .right * {
+  pointer-events: auto;
+}

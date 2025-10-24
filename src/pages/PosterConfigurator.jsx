@@ -1,37 +1,24 @@
+// src/pages/PosterConfigurator.jsx
 import { useState } from "react";
 import Uploader from "../components/Uploader.jsx";
 import ControlsBasic from "../components/ControlsBasic.jsx";
-import MockupPreview from "../components/MockupPreview.jsx";
-import { MOCKUPS } from "../mocks.js";
+import GabaritoPreview from "../components/GabaritoPreview.jsx";
+import DownloadGabarito from "../components/DownloadGabarito.jsx";
 
 export default function PosterConfigurator() {
   const [userImage, setUserImage] = useState(null);
-
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-  const [mockKey, setMockKey] = useState("posterFrontal"); // ou "quadroPerspectiva"
-
-  const handleImage = (dataUrl) => {
-    setUserImage(dataUrl);
-    setZoom(1);
-    setOffset({ x: 0, y: 0 });
-  };
-
-  const handleDrag = (dx, dy) => {
-    setOffset((o) => ({ x: o.x + dx, y: o.y + dy }));
-  };
-
-  const resetView = () => {
-    setZoom(1);
-    setOffset({ x: 0, y: 0 });
-  };
+  const handleImage = (dataUrl) => { setUserImage(dataUrl); setZoom(1); setOffset({ x: 0, y: 0 }); };
+  const handleDrag  = (dx, dy) => setOffset((o) => ({ x: o.x + dx, y: o.y + dy }));
+  const resetView   = () => { setZoom(1); setOffset({ x: 0, y: 0 }); };
 
   return (
     <section className="config-grid">
       <div className="left">
         <h2>Personalize seu pôster</h2>
-        <p className="muted">Envie uma imagem quadrada (1:1) com boa resolução.</p>
+        <p className="muted">Envie uma imagem com boa resolução.</p>
 
         <Uploader onImage={handleImage} />
 
@@ -43,38 +30,30 @@ export default function PosterConfigurator() {
           onReset={resetView}
         />
 
-        <div className="controls">
-          <label>Mockup</label>
-          <div className="btns">
-            <button
-              className={mockKey === "posterFrontal" ? "btn active" : "btn"}
-              type="button"
-              onClick={() => setMockKey("posterFrontal")}
-            >
-              Frontal
-            </button>
-            <button
-              className={mockKey === "quadroPerspectiva" ? "btn active" : "btn"}
-              type="button"
-              onClick={() => setMockKey("quadroPerspectiva")}
-            >
-              Quadro
-            </button>
-          </div>
-        </div>
-
-        <button className="cta" disabled={!userImage}>Adicionar ao carrinho</button>
+        <button className="cta" disabled={!userImage}>
+          Adicionar ao carrinho
+        </button>
       </div>
 
       <div className="right">
-        <MockupPreview
-          mock={MOCKUPS[mockKey]}
+        <GabaritoPreview
           userImage={userImage}
           zoom={zoom}
           offset={offset}
           onDrag={handleDrag}
         />
-        <p className="hint">Pré-visualização no mockup escolhido.</p>
+
+        {/* legenda fora do quadro, logo abaixo */}
+        <p className="hint mt-2">
+          * <span className="font-medium" style={{ color: "#cf5460" }}>Vermelho</span> = área plana •{" "}
+          <span className="font-medium" style={{ color: "#33a871" }}>Verde</span> = 1ª dobra •{" "}
+          <span className="font-medium" style={{ color: "#417BBF" }}>Azul</span> = parte de trás
+        </p>
+
+        {/* botão rosa de download abaixo do quadro */}
+        <div className="mt-3">
+          <DownloadGabarito />
+        </div>
       </div>
     </section>
   );

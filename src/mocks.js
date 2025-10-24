@@ -1,20 +1,25 @@
+// src/mocks.js
+function asset(p) {
+  const clean = String(p).replace(/^\/+/, "");
+  return `${import.meta.env.BASE_URL}${clean}`;
+}
+
+// use exatamente o nome/caixa do arquivo na pasta public/mockups/
+const MOCKUP_PATH = "mockups/poster-front.jpeg"; // <<< .jpeg
+const VERSION = "?v=2"; // bust cache
+
 export const MOCKUPS = {
   posterFrontal: {
-    label: "Poster frontal",
-    src: "mockups/poster-front.jpg",
-    polygon: null,
-    insets: { top: 6.5, right: 6.5, bottom: 6.5, left: 6.5 },
-    rounded: 8,
+    src: asset(MOCKUP_PATH + VERSION),
+    frame: { x: 0.12, y: 0.09, w: 0.76, h: 0.82 },
   },
   quadroPerspectiva: {
-    label: "Quadro em perspectiva",
-    src: "mockups/quadro-perspectiva.jpg",
-    polygon: [
-      [17.0, 13.0],
-      [84.8, 21.0],
-      [74.5, 90.5],
-      [10.5, 81.5],
-    ],
-    rounded: 2,
+    src: asset(MOCKUP_PATH + VERSION),
+    frame: { x: 0.12, y: 0.09, w: 0.76, h: 0.82 },
   },
+};
+
+export const GABARITOS = {
+  pdf: asset("gabaritos/gabarito_pdf.pdf" + VERSION),
+  png: asset("gabaritos/gabarito.png" + VERSION),
 };

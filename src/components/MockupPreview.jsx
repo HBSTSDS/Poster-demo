@@ -1,65 +1,121 @@
-import { useRef } from "react";
-import PerspectivePlane from "./PerspectivePlane.jsx";
+// src/components/MockupPreview.jsx
+import { useRef, useEffect, useState } from "react";
 
-const asset = (p) => `${import.meta.env.BASE_URL}${String(p || "").replace(/^\/+/, "")}`;
+export default function MockupPreview({
+  mock,
+  userImage,
+  zoom = 1,
+  offset = { x: 0, y: 0 },
+  onDrag,
+}) {
+  const wrapRef = useRef(null);
+  const drag = useRef(null);
+  const [loaded, setLoaded] = useState(false);
 
-export default function MockupPreview({ mock, userImage, zoom = 1, offset = { x: 0, y: 0 }, onDrag }) {
-  const ref = useRef(null);
-  let dragging = false;
-  let last = { x: 0, y: 0 };
+  // Controle de arrastar a arte
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
 
-  const onPointerDown = (e) => { if (!userImage) return; dragging = true; last = { x: e.clientX, y: e.clientY }; ref.current?.setPointerCapture(e.pointerId); };
-  const onPointerMove = (e) => { if (!dragging) return; const dx = e.clientX - last.x; const dy = e.clientY - last.y; last = { x: e.clientX, y: e.clientY }; onDrag?.(dx, dy); };
-  const onPointerUp = () => { dragging = false; };
+    const start = (e) => {
+      const p = "touches" in e ? e.touches[0] : e;
+      drag.current = { x: p.clientX, y: p.clientY };
+      e.preventDefault();
+    };
+    const move = (e) => {
+      if (!drag.current) return;
+      const p = "touches" in e ? e.touches[0] : e;
+      const dx = p.clientX - drag.current.x;
+      const dy = p.clientY - drag.current.y;
+      drag.current = { x: p.clientX, y: p.clientY };
+      onDrag && onDrag(dx, dy);
+    };
+    const end = () => (drag.current = null);
 
-  const mockSrc = asset(mock?.src);
+    el.addEventListener("mousedown", start);
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", end);
+    el.addEventListener("touchstart", start, { passive: false });
+    window.addEventListener("touchmove", move, { passive: false });
+    window.addEventListener("touchend", end);
 
-  // Converte % -> px com base no tamanho atual do container
-  const quadPx = (() => {
-    if (!mock?.polygon || !ref.current) return null;
-    const { clientWidth: W, clientHeight: H } = ref.current;
-    return mock.polygon.map(([x, y]) => [ (x/100)*W, (y/100)*H ]);
-  })();
+    return () => {
+      el.removeEventListener("mousedown", start);
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", end);
+      el.removeEventListener("touchstart", start);
+      window.removeEventListener("touchmove", move);
+      window.removeEventListener("touchend", end);
+    };
+  }, [onDrag]);
+
+  const frame = mock?.frame || { x: 0, y: 0, w: 1, h: 1 };
 
   return (
     <div
-      ref={ref}
-      className="mockup"
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
+      className="relative bg-white rounded-xl shadow-xl overflow-hidden flex items-center justify-center"
+      style={{
+        width: "480px",
+        height: "600px", // altura fixa para manter o pôster em pé
+        maxWidth: "100%",
+        zIndex: 10,
+      }}
     >
-      {mockSrc ? <img src={mockSrc} alt="" className="mockup-base" draggable="false" /> : <div className="mockup-base" />}
-
-      {userImage && mock && (
-        mock.polygon ? (
-          // PERSPECTIVA REAL: desenha no quadrilátero
-          quadPx && <PerspectivePlane imgSrc={userImage} quad={quadPx} zoom={zoom} offset={offset} />
-        ) : (
-          // FRONTAL: janela retangular com insets
-          <div
-            className="poster-window"
-            style={{
-              top: `${mock.insets?.top ?? 6.5}%`,
-              right: `${mock.insets?.right ?? 6.5}%`,
-              bottom: `${mock.insets?.bottom ?? 6.5}%`,
-              left: `${mock.insets?.left ?? 6.5}%`,
-              borderRadius: (mock.rounded ?? 8) + "px",
-            }}
-          >
+      {/* área de recorte */}
+      <div ref={wrapRef} className="absolute inset-0 z-10 flex items-center justify-center">
+        <div
+          style={{
+            position: "absolute",
+            left: `${frame.x * 100}%`,
+            top: `${frame.y * 100}%`,
+            width: `${frame.w * 100}%`,
+            height: `${frame.h * 100}%`,
+            overflow: "hidden",
+            borderRadius: "4px",
+            cursor: userImage ? "grab" : "default",
+          }}
+        >
+          {userImage && (
             <img
               src={userImage}
-              alt=""
-              className="poster-img"
+              alt="Arte do cliente"
               style={{
-                position: "absolute", inset: 0, width: "100%", height: "100%",
-                objectFit: "cover", objectPosition: "center",
-                transformOrigin: "center", transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+                position: "absolute",
+                left: `${offset.x}px`,
+                top: `${offset.y}px`,
+                width: `${zoom * 100}%`,
+                height: `${zoom * 100}%`,
+                objectFit: "cover",
+                userSelect: "none",
+                pointerEvents: "none",
               }}
               draggable="false"
             />
-          </div>
-        )
+          )}
+        </div>
+      </div>
+
+      {/* Mockup com tamanho fixo e centralizado */}
+      <img
+        src={mock.src}
+        alt="Mockup do pôster"
+        className="object-contain select-none pointer-events-none transition-opacity duration-300"
+        style={{
+          width: "100%",
+          height: "100%",
+          maxHeight: "100%",
+          display: loaded ? "block" : "none",
+        }}
+        onLoad={() => setLoaded(true)}
+        onError={(e) => {
+          console.error("Falha ao carregar mockup:", mock.src);
+          e.currentTarget.style.display = "none";
+        }}
+        draggable="false"
+      />
+
+      {!loaded && (
+        <div className="absolute inset-0 bg-neutral-100 animate-pulse rounded-xl" />
       )}
     </div>
   );
