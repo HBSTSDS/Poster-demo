@@ -20,7 +20,7 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
   color: var(--ink);
-  background: #fff;
+  background: #ffffff;
 }
 
 /* ===================== LAYOUT ===================== */
@@ -251,4 +251,57 @@ body {
     gap: 32px;
   }
   .cta { width: auto; } /* desktop não precisa largura total */
+}
+
+.preview-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* Galeria vertical à direita do quadro */
+.poster-shots {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.poster-shot {
+  width: 100px;
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: center;
+}
+
+.poster-shot img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.poster-shot figcaption {
+  font-size: 11px;
+  color: var(--muted, #6b7280);
+  margin-top: 4px;
+}
+
+/* Responsivo */
+@media (max-width: 800px) {
+  .preview-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+  .poster-shots {
+    flex-direction: row;
+    justify-content: center;
+  }
+  .poster-shot {
+    width: 90px;
+  }
+  .poster-shot img {
+    height: 130px;
+  }
 }
