@@ -67,9 +67,9 @@ export default function PosterConfigurator() {
 
         {/* legenda fora do quadro */}
         <p className="hint mt-2" style={{ marginTop: 8 }}>
-          * <span style={{ color: "#cf5460", fontWeight: 600 }}>Vermelho</span> = área plana •{" "}
-          <span style={{ color: "#33a871", fontWeight: 600 }}>Verde</span> = 1ª dobra •{" "}
-          <span style={{ color: "#417BBF", fontWeight: 600 }}>Azul</span> = 2ª dobra (parte de trás)
+          * <strong><span style={{ fontSize: "22px", color: "#cf5460", fontWeight: 600}}>Vermelho</span> = área plana •{" "}</strong>
+          <strong><span style={{ fontSize: "22px", color: "#33a871", fontWeight: 600 }}>Verde</span> = 1ª dobra •{" "}</strong>
+          <strong><span style={{ fontSize: "22px",color: "#417BBF", fontWeight: 600 }}>Azul</span> = 2ª dobra (parte de trás)</strong>
         </p>
 
         <div className="mt-3" style={{ marginTop: 12 }}>
