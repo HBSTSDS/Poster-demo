@@ -1,81 +1,116 @@
 // src/pages/PosterConfigurator.jsx
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Uploader from "../components/Uploader.jsx";
 import ControlsBasic from "../components/ControlsBasic.jsx";
 import GabaritoPreview from "../components/GabaritoPreview.jsx";
 import DownloadGabarito from "../components/DownloadGabarito.jsx";
-import PosterShots from "../components/PosterShots.jsx";
+import VideoPreview from "../components/VideoPreview.jsx";
+import ModalVideo from "../components/ModalVideo.jsx";
 
 export default function PosterConfigurator() {
+  // ==== ESTADOS ====
   const [userImage, setUserImage] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [videoOpen, setVideoOpen] = useState(false);
 
-  const handleImage = (dataUrl) => {
-    console.log("[Uploader] imagem recebida?", !!dataUrl);
+  // ==== HANDLERS ====
+  const handleImage = useCallback((dataUrl) => {
     setUserImage(dataUrl);
     setZoom(1);
     setOffset({ x: 0, y: 0 });
-  };
+  }, []);
 
-  const handleDrag = (dx, dy) =>
+  const handleDrag = useCallback((dx, dy) => {
     setOffset((o) => ({ x: o.x + dx, y: o.y + dy }));
+  }, []);
 
-  const resetView = () => {
+  const resetView = useCallback(() => {
     setZoom(1);
     setOffset({ x: 0, y: 0 });
-  };
+  }, []);
 
-  console.log("[PosterConfigurator] render", { hasImage: !!userImage });
+  // Caminho do vídeo (coloque o arquivo em /public/videos/Bricolagens.mp4)
+  const videoSrc = "/videos/Bricolagens.mp4";
 
   return (
-    <section className="config-grid" style={{ minHeight: "100vh" }}>
-      <div className="left" style={{ padding: 16 }}>
-        <h2>Personalize seu pôster</h2>
+    <main className="page">
+      <div className="content">
+        {/* Cabeçalho */}
+        <h2 className="brand" style={{ marginBottom: 6 }}>Personalize seu pôster</h2>
         <p className="muted">Envie uma imagem com boa resolução.</p>
 
-        {/* Uploader usa onImage */}
-        <Uploader onImage={handleImage} />
+        {/* GRID principal - usa as classes do index.css */}
+        <div className="config-grid">
+          {/* === COLUNA ESQUERDA === */}
+          <section className="left">
+            {/* Uploader */}
+            <Uploader onImage={handleImage} />
 
-        <div style={{ marginTop: 12 }}>
-          <ControlsBasic
-            zoom={zoom}
-            setZoom={setZoom}
-            offset={offset}
-            setOffset={setOffset}
-            onReset={resetView}
-            disabled={!userImage}
-          />
-        </div>
+            {/* Controles */}
+            <div className="controls" style={{ marginTop: 12 }}>
+              <ControlsBasic
+                zoom={zoom}
+                setZoom={setZoom}
+                offset={offset}
+                setOffset={setOffset}
+                onReset={resetView}
+              />
+            </div>
 
-        <button className="cta" disabled={!userImage} style={{ marginTop: 12 }}>
-          Adicionar ao carrinho
-        </button>
+            {/* CTA */}
+            <button className="cta">Adicionar ao carrinho</button>
 
-        <div style={{ marginTop: 16 }}>
-          <PosterShots />
+            {/* Exemplo do pôster (preview pequeno do vídeo) */}
+            <div style={{ marginTop: 18 }}>
+              <p style={{ fontSize: 14, marginBottom: 8, color: "#111" }}>Exemplo do pôster</p>
+              <div className="poster-shots">
+                <VideoPreview src={videoSrc} onClick={() => setVideoOpen(true)} />
+              </div>
+            </div>
+          </section>
+
+          {/* === COLUNA DIREITA === */}
+          <section className="right">
+            {/* Quadro do preview grande */}
+            <div className="bg-white rounded-xl shadow-lg p-4 w-full max-w-[720px]">
+              <GabaritoPreview
+                userImage={userImage}
+                zoom={zoom}
+                offset={offset}
+                onDrag={handleDrag}
+              />
+            </div>
+
+            {/* Legenda colorida + baixar gabarito (agora abaixo do preview) */}
+            <div style={{ width: "100%", maxWidth: 720, marginTop: 10 }}>
+              <p className="hint" style={{ marginTop: 8 }}>
+                <span>* </span>
+                <strong>
+                  <span style={{ color: "#cf5460", fontWeight: 600 }}>Vermelho</span> = área plana •{" "}
+                </strong>
+                <strong>
+                  <span style={{ color: "#33a871", fontWeight: 600 }}>Verde</span> = 1ª dobra •{" "}
+                </strong>
+                <strong>
+                  <span style={{ color: "#417BBF", fontWeight: 600 }}>Azul</span> = 2ª dobra (parte de trás)
+                </strong>
+              </p>
+
+              <div style={{ marginTop: 8 }}>
+                <DownloadGabarito />
+              </div>
+            </div>
+          </section>
         </div>
       </div>
 
-      <div className="right" style={{ padding: 16 }}>
-        <GabaritoPreview
-          userImage={userImage}
-          zoom={zoom}
-          offset={offset}
-          onDrag={handleDrag}
-        />
-
-        {/* legenda fora do quadro */}
-        <p className="hint mt-2" style={{ marginTop: 8 }}>
-          * <strong><span style={{ fontSize: "22px", color: "#cf5460", fontWeight: 600}}>Vermelho</span> = área plana •{" "}</strong>
-          <strong><span style={{ fontSize: "22px", color: "#33a871", fontWeight: 600 }}>Verde</span> = 1ª dobra •{" "}</strong>
-          <strong><span style={{ fontSize: "22px",color: "#417BBF", fontWeight: 600 }}>Azul</span> = 2ª dobra (parte de trás)</strong>
-        </p>
-
-        <div className="mt-3" style={{ marginTop: 12 }}>
-          <DownloadGabarito disabled={!userImage} />
-        </div>
-      </div>
-    </section>
+      {/* MODAL DE VÍDEO (abre em tela com blur/escuro, sem som) */}
+      <ModalVideo
+        open={videoOpen}
+        onClose={() => setVideoOpen(false)}
+        src={videoSrc}
+      />
+    </main>
   );
 }
