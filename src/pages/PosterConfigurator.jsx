@@ -37,8 +37,9 @@ export default function PosterConfigurator() {
     <main className="page">
       <div className="content">
         {/* Cabeçalho */}
-        <h2 className="brand" style={{ marginBottom: 6 }}>Personalize seu pôster</h2>
-        <p className="muted">Envie uma imagem com boa resolução.</p>
+        <h2 className="brand" style={{ marginBottom: 6 }}>
+          Personalize seu pôster
+        </h2>
 
         {/* GRID principal - usa as classes do index.css */}
         <div className="config-grid">
@@ -63,9 +64,14 @@ export default function PosterConfigurator() {
 
             {/* Exemplo do pôster (preview pequeno do vídeo) */}
             <div style={{ marginTop: 18 }}>
-              <p style={{ fontSize: 14, marginBottom: 8, color: "#111" }}>Exemplo do pôster</p>
+              <p style={{ fontSize: 14, marginBottom: 8, color: "#111" }}>
+                Exemplo do pôster
+              </p>
               <div className="poster-shots">
-                <VideoPreview src={videoSrc} onClick={() => setVideoOpen(true)} />
+                <VideoPreview
+                  src={videoSrc}
+                  onClick={() => setVideoOpen(true)}
+                />
               </div>
             </div>
           </section>
@@ -83,21 +89,38 @@ export default function PosterConfigurator() {
             </div>
 
             {/* Legenda colorida + baixar gabarito (agora abaixo do preview) */}
-            <div style={{ width: "100%", maxWidth: 720, marginTop: 10 }}>
-              <p className="hint" style={{ marginTop: 8 }}>
+            {/* Legenda colorida + baixar gabarito centralizados */}
+            <div
+              style={{
+                width: "100%",
+                maxWidth: 720,
+                marginTop: 10,
+                textAlign: "center", // 🔹 Centraliza o texto e o link
+              }}
+            >
+              <p className="hint" style={{ marginTop: 8, textAlign: "center" }}>
                 <span>* </span>
                 <strong>
-                  <span style={{ color: "#cf5460", fontWeight: 600 }}>Vermelho</span> = área plana •{" "}
+                  <span style={{ color: "#cf5460", fontWeight: 600 }}>
+                    Vermelho
+                  </span>{" "}
+                  = área plana •{" "}
                 </strong>
                 <strong>
-                  <span style={{ color: "#33a871", fontWeight: 600 }}>Verde</span> = 1ª dobra •{" "}
+                  <span style={{ color: "#33a871", fontWeight: 600 }}>
+                    Verde
+                  </span>{" "}
+                  = 1ª dobra •{" "}
                 </strong>
                 <strong>
-                  <span style={{ color: "#417BBF", fontWeight: 600 }}>Azul</span> = 2ª dobra (parte de trás)
+                  <span style={{ color: "#417BBF", fontWeight: 600 }}>
+                    Azul
+                  </span>{" "}
+                  = 2ª dobra (parte de trás)
                 </strong>
               </p>
 
-              <div style={{ marginTop: 8 }}>
+              <div style={{ marginTop: 8, textAlign: "center" }}>
                 <DownloadGabarito />
               </div>
             </div>
